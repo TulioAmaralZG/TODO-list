@@ -27,6 +27,27 @@ public class Main {
         int modoDeExibicao = 0;
         int testandoLimite = 0;
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        int listaComTesteDeTarefas = 0;
+        System.out.println("Deseja que tenha tarefas adicionadas? [0 - sim/qualquer numero para nao]");
+        listaComTesteDeTarefas = scanner.nextInt();
+        if(listaComTesteDeTarefas == 0){
+
+            Tarefa tarefaUm = new Tarefa("Arroz", "Comidinha gostosa", 1, "Comida", 1, LocalDate.parse("11/09/2025", formatter));
+            Tarefa tarefaDois = new Tarefa("Arroz", "Comidinha gostosa", 2, "Comida", 2, LocalDate.parse("11/09/2025", formatter));
+            Tarefa tarefaTres = new Tarefa("Arroz", "Comidinha gostosa", 3, "Comida", 3, LocalDate.parse("11/09/2025", formatter));
+            Tarefa tarefaQuatro = new Tarefa("Arroz", "Comidinha gostosa", 4, "Comida", 1, LocalDate.parse("11/09/2025", formatter));
+            Tarefa tarefaCinco = new Tarefa("Arroz", "Comidinha gostosa", 5, "Comida", 2, LocalDate.parse("11/09/2025", formatter));
+
+            list.add(tarefaUm);
+            list.add(tarefaDois);
+            list.add(tarefaTres);
+            list.add(tarefaQuatro);
+            list.add(tarefaCinco);
+
+        }
+
         while(opcao){
 
             int escolhaOpcao = 0;
@@ -43,21 +64,65 @@ public class Main {
                 System.out.println("Done: " + escolhaOpcao + " ToDo: " + escolhaOpcao + "Doing: " + escolhaOpcao);
                 System.out.println("-----------------------------------------");
                 list.stream().forEach(item -> {
+                    String statusStr = switch(item.getStatus()) {
+                        case 1 -> "A fazer";
+                        case 2 -> "Fazendo";
+                        case 3 -> "Feito";
+                        default -> "Desconhecido (" + item.getStatus() + ")";
+                    };
                     System.out.println("ID: " + item.getId() + "  2.Nome: " + item.getName());
                     System.out.println("3.Descricao: " + item.getDescription());
                     System.out.println("4.Categoria: " + item.getCategoria());
-                    System.out.println("5.Prioridade: "  + item.getPrioridade() + "  6.Status: " + item.getStatus());
+                    System.out.println("5.Prioridade: "  + item.getPrioridade() + "  6.Status: " + statusStr);
                     System.out.println("7. Data: " + item.getDataTarefa() + " (" +  (long) ChronoUnit.DAYS.between(LocalDate.now(), item.getDataTarefa()) + " dias)");
                     System.out.println("-----------------------------------------");
                 });
 
             }else if(modoDeExibicao == 1){
+
                 System.out.println("Categoria");
 
             }else if(modoDeExibicao == 2){
-                System.out.println("Prioridade");
+
+                list.stream()
+                        .sorted((t1, t2) -> Integer.compare(t1.getPrioridade(), t2.getPrioridade()))
+                        .forEach(item -> {
+                            String statusStr = switch(item.getStatus()) {
+                                case 1 -> "A fazer";
+                                case 2 -> "Fazendo";
+                                case 3 -> "Feito";
+                                default -> "Desconhecido (" + item.getStatus() + ")";
+                            };
+                            System.out.println("ID: " + item.getId() + "  2.Nome: " + item.getName());
+                            System.out.println("3.Descricao: " + item.getDescription());
+                            System.out.println("4.Categoria: " + item.getCategoria());
+                            System.out.println("5.Prioridade: "  + item.getPrioridade() + "  6.Status: " + statusStr);
+                            System.out.println("7. Data: " + item.getDataTarefa() + " (" +  (long) ChronoUnit.DAYS.between(LocalDate.now(), item.getDataTarefa()) + " dias)");
+                            System.out.println("-----------------------------------------");
+                        });
+
+
             }else if(modoDeExibicao == 3){
-                System.out.println("Status");
+                System.out.println("-----------------------------------------");
+                System.out.println("Tarefas ordenadas por status:");
+                System.out.println("-----------------------------------------");
+                list.stream()
+                        .sorted((t1, t2) -> Integer.compare(t1.getStatus(), t2.getStatus()))
+                        .forEach(item -> {
+                            String statusStr = switch(item.getStatus()) {
+                                case 1 -> "A fazer";
+                                case 2 -> "Fazendo";
+                                case 3 -> "Feito";
+                                default -> "Desconhecido (" + item.getStatus() + ")";
+                            };
+                            System.out.println("ID: " + item.getId() + "  Nome: " + item.getName());
+                            System.out.println("Status: " + statusStr + " | Prioridade: " + item.getPrioridade());
+                            System.out.println("Categoria: " + item.getCategoria());
+                            System.out.println("Descrição: " + item.getDescription());
+                            System.out.println("Data: " + item.getDataTarefa().format(formatter) +
+                                    " (" + (long) ChronoUnit.DAYS.between(LocalDate.now(), item.getDataTarefa()) + " dias)");
+                            System.out.println("-----------------------------------------");
+                        });
             }
 
 
@@ -67,7 +132,7 @@ public class Main {
             escolhaOpcao = scanner.nextInt();
 
             switch (escolhaOpcao){
-                case 1:
+                case 1: // Adicionar um item
                     scanner.nextLine();
                     System.out.print("Adionando Item:\n");
                     System.out.print("Nome: ");
@@ -87,6 +152,7 @@ public class Main {
 
                                 prioridadeItem = 0;
                                 System.out.println("Erro: Valor fora dos parametros!");
+                                return;
                             }
                         }catch(InputMismatchException e) {
                             System.out.println("não é um número de prioridade, Digite um numero!!!");
@@ -120,7 +186,6 @@ public class Main {
                         String dataDigitada = scanner.nextLine();
 
                         try{
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
                             prazoTarefa = LocalDate.parse(dataDigitada, formatter);
                             if(prazoTarefa.isBefore(dataAtual)){
@@ -134,10 +199,14 @@ public class Main {
 
                     Tarefa novaTarefa = new Tarefa(nomeItem, descricaoItem, prioridadeItem, categoriaItem, statusItem, prazoTarefa);
 
+                    prioridadeItem = 0;
+                    statusItem = 0;
+                    prazoTarefa = null;
+
                     list.add(novaTarefa);
 
                     break;
-                case 2:
+                case 2: // Excluir o item
                     if(!list.isEmpty()){
                         int excluirObjeto = 0;
                         System.out.println("Digite o ID do item: ");
@@ -150,7 +219,7 @@ public class Main {
                         }
                     }
                     break;
-                case 3:
+                case 3: // Modificar item
                     int modificarItemEscolha;
                     int modificarItem;
                     if(!list.isEmpty()){
@@ -280,7 +349,6 @@ public class Main {
 
                                 while(prazoTarefaLocal == null){
                                     try{
-                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
                                         prazoTarefaLocal  = LocalDate.parse(novaData, formatter);
 
@@ -303,14 +371,14 @@ public class Main {
                     }
 
                     break;
-                case 4:
+                case 4: // sair do programa
                     opcao = false;
                     break;
-                case 5:
-
-
+                case 5: // mudar o modo de exibição
                     modoDeExibicao = testandoLimite % 4;
                     testandoLimite++;
+
+                    System.out.println(modoDeExibicao);
                     break;
 
             }

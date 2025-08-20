@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>TODO List</title>
+  <link rel="stylesheet" href="./styles/style.css">
+  <script src="js/script.js" defer></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+</head>
+<body>
+<main>
+  <div class="form-tarefa">
+    <form id="tarefaForm">
+      <div>
+        Nome: <input type="text" id="nome">
+      </div>
+      <div>
+        Descricao: <input type="text" id="descricao">
+      </div>
+      <div>
+        Data Termino: <input type="date" name="data-termino" id="dataTermino">
+      </div>
+      <div>
+        Nivel de prioridade: <input type="number" name="prioridade" id="prioridade">
+      </div>
+      <div>
+        Categoria: <input type="text" id="categoria">
+      </div>
+      <div>
+        Status:
+        <select name="status" id="status">
+          <option value="todo">TODO</option>
+          <option value="doing">DOING</option>
+          <option value="done">DONE</option>
+        </select>
+      </div>
+      <input type="submit" value="Enviar" class="submit">
+
+    </form>
+
+  </div>
+  <span>LISTA DE TAREFAS</span>
+  <div class="lista-tarefas">
+
+    <ul>
+
+    </ul>
+  </div>
+</main>
+
+
+
+</body>
+</html>

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function (){
             document.getElementById('descricao').focus();
             return;
         }
-        if(dataTeste < dataHoje){
+        if(dataTeste < dataHoje && !dataTermino){
             document.getElementById('dataTermino').focus();
             return;
         }

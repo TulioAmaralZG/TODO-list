@@ -3,10 +3,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,6 +11,9 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         List<Tarefa> list = new ArrayList<>();
+
+        verificarAlarmePeriodicamente(list, 5);
+
         boolean opcao = true;
         LocalDate dataAtual = LocalDate.now();
 
@@ -26,6 +26,8 @@ public class Main {
         LocalDate prazoTarefa = null;
         int modoDeExibicao = 0;
         int testandoLimite = 0;
+        boolean alarme = false;
+        int horasAntes = 0;
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -34,11 +36,11 @@ public class Main {
         listaComTesteDeTarefas = scanner.nextInt();
         if(listaComTesteDeTarefas == 0){
 
-            Tarefa tarefaUm = new Tarefa("Arroz", "Comidinha gostosa", 1, "Comida", 1, LocalDate.parse("11/09/2025", formatter));
-            Tarefa tarefaDois = new Tarefa("Arroz", "Comidinha gostosa", 2, "Comida", 2, LocalDate.parse("11/09/2025", formatter));
-            Tarefa tarefaTres = new Tarefa("Arroz", "Comidinha gostosa", 3, "Comida", 3, LocalDate.parse("11/09/2025", formatter));
-            Tarefa tarefaQuatro = new Tarefa("Arroz", "Comidinha gostosa", 4, "Comida", 1, LocalDate.parse("11/09/2025", formatter));
-            Tarefa tarefaCinco = new Tarefa("Arroz", "Comidinha gostosa", 5, "Comida", 2, LocalDate.parse("11/09/2025", formatter));
+            Tarefa tarefaUm = new Tarefa("Arroz", "Comidinha gostosa", 1, "Comida", 1, LocalDate.parse("11/09/2025", formatter), 0);
+            Tarefa tarefaDois = new Tarefa("Arroz", "Comidinha gostosa", 2, "Comida", 2, LocalDate.parse("11/09/2025", formatter), 3);
+            Tarefa tarefaTres = new Tarefa("Arroz", "Comidinha gostosa", 3, "Comida", 3, LocalDate.parse("11/09/2025", formatter), 0);
+            Tarefa tarefaQuatro = new Tarefa("Arroz", "Comidinha gostosa", 4, "Comida", 1, LocalDate.parse("11/09/2025", formatter),4);
+            Tarefa tarefaCinco = new Tarefa("Arroz", "Comidinha gostosa", 5, "Comida", 2, LocalDate.parse("11/09/2025", formatter),0);
 
             list.add(tarefaUm);
             list.add(tarefaDois);
@@ -132,6 +134,7 @@ public class Main {
             escolhaOpcao = scanner.nextInt();
 
             switch (escolhaOpcao){
+
                 case 1: // Adicionar um item
                     scanner.nextLine();
                     System.out.print("Adionando Item:\n");
@@ -141,6 +144,21 @@ public class Main {
                     categoriaItem = scanner.nextLine();
                     System.out.print("Descricao: ");
                     descricaoItem = scanner.nextLine();
+                    System.out.print("Alarme[1-sim/0-nao]: ");
+                    int alarmeInt = scanner.nextInt();
+
+                    if(alarmeInt == 1){
+                        alarme = true;
+                    }else{
+                        alarme = false;
+                    }
+
+                    if(alarme == true){
+                        System.out.print("Escolha quantas horas antes da tarefa?: ");
+                        horasAntes = scanner.nextInt();
+
+                        alarmeTarefa(list);
+                    }
 
 
                     while(prioridadeItem == 0){
@@ -152,7 +170,7 @@ public class Main {
 
                                 prioridadeItem = 0;
                                 System.out.println("Erro: Valor fora dos parametros!");
-                                return;
+                                continue;
                             }
                         }catch(InputMismatchException e) {
                             System.out.println("não é um número de prioridade, Digite um numero!!!");
@@ -197,7 +215,7 @@ public class Main {
                         }
                     }
 
-                    Tarefa novaTarefa = new Tarefa(nomeItem, descricaoItem, prioridadeItem, categoriaItem, statusItem, prazoTarefa);
+                    Tarefa novaTarefa = new Tarefa(nomeItem, descricaoItem, prioridadeItem, categoriaItem, statusItem, prazoTarefa, 0);
 
                     prioridadeItem = 0;
                     statusItem = 0;
@@ -386,4 +404,33 @@ public class Main {
         }
         scanner.close();
     }
+    static void alarmeTarefa(List<Tarefa> tarefas) {
+        LocalDate hoje = LocalDate.now();
+
+        for (Tarefa tarefa : tarefas) {
+            if (tarefa.getStatus() == 3) {
+                continue;
+            }
+
+            LocalDate dataTarefa = tarefa.getDataTarefa();
+            long diasAteTarefa = ChronoUnit.DAYS.between(hoje, dataTarefa);
+            int horasAntes = tarefa.getHorasAntes();
+
+            if (diasAteTarefa >= 0 && diasAteTarefa * 24 <= horasAntes) {
+                System.out.println("Tarefa: " + tarefa.getName());
+                System.out.println("Data limite: " + tarefa.getDataTarefa());
+                System.out.println("Faltam " + diasAteTarefa + " dias para o prazo final!");
+            }
+        }
+    }
+    static void verificarAlarmePeriodicamente(List<Tarefa> tarefas, int intervaloMinutos) {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                System.out.println("\nVerificando alarmes...");
+                alarmeTarefa(tarefas);
+            }
+        }, 0, intervaloMinutos * 60 * 1000);
+    }
+
 }

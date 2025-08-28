@@ -11,10 +11,11 @@ public class Tarefa {
     private String categoria;
     private int status;
     private LocalDate dataTarefa;
+    private int horasAntes = 0;
 
 
 
-    public Tarefa(String name, String description, int prioridade, String categoria, int status, LocalDate dataTarefa) {
+    public Tarefa(String name, String description, int prioridade, String categoria, int status, LocalDate dataTarefa, int horasAntes) {
         this.id = proximoId++;
         this.name = name;
         this.categoria = categoria;
@@ -22,6 +23,7 @@ public class Tarefa {
         this.prioridade = prioridade;
         this.status = status;
         this.dataTarefa = dataTarefa;
+        this.horasAntes = horasAntes;
     }
 
     public int getStatus() {
@@ -86,5 +88,13 @@ public class Tarefa {
 
     public void setDataTarefa(LocalDate dataTarefa) {
         this.dataTarefa = dataTarefa;
+    }
+
+    public void setHorasAntes(int horasAntes) {
+        this.horasAntes = horasAntes;
+    }
+
+    public int getHorasAntes() {
+        return horasAntes;
     }
 }
